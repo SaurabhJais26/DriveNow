@@ -31,8 +31,10 @@ struct DNMapViewRepresentable: UIViewRepresentable {
         case .noInput:
             context.coordinator.clearMapViewAndRecenterOnUserLocation()
             break
+            
         case .searchingForLocation:
             break
+            
         case .locationSelected:
             if let coordinate = locationViewModel.selectedDriveNowLocation?.coordinate {
                 print("DEBUG: Selected location in map view is \(coordinate)")
@@ -40,6 +42,7 @@ struct DNMapViewRepresentable: UIViewRepresentable {
                 context.coordinator.configurePolyline(withDestinationCoordinate: coordinate)
             }
             break
+            
         case .polylineAdded:
             break
         }
