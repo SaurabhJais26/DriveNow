@@ -8,6 +8,11 @@
 import Foundation
 import MapKit
 
+enum LocationResultViewConfig {
+    case ride
+    case saveLocation
+}
+
 class LocationSearchViewModel: NSObject, ObservableObject {
     
     // MARK: - Properties
@@ -36,17 +41,23 @@ class LocationSearchViewModel: NSObject, ObservableObject {
     
     // MARK: - Helpers
     
-    func selectLocation(_ localSearch: MKLocalSearchCompletion) {
-        locationSearch(forLocalSearchCompletion: localSearch) { response, error in
-            if let error = error {
-                print("DEBUG: Location Search failed with error \(error.localizedDescription)")
-                return
+    func selectLocation(_ localSearch: MKLocalSearchCompletion, config: LocationResultViewConfig) {
+        switch config {
+        case .ride:
+            locationSearch(forLocalSearchCompletion: localSearch) { response, error in
+                if let error = error {
+                    print("DEBUG: Location Search failed with error \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let item = response?.mapItems.first else { return }
+                let coordinate = item.placemark.coordinate
+                self.selectedDriveNowLocation = DriveNowLocation(title: localSearch.title, coordinate: coordinate)
+                print("DEBUG: Location Coordinates \(coordinate)")
             }
             
-            guard let item = response?.mapItems.first else { return }
-            let coordinate = item.placemark.coordinate
-            self.selectedDriveNowLocation = DriveNowLocation(title: localSearch.title, coordinate: coordinate)
-            print("DEBUG: Location Coordinates \(coordinate)")
+        case .saveLocation:
+            print("DEBUG: Save Location")
         }
     }
     
