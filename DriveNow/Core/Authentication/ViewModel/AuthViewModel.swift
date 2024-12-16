@@ -28,10 +28,13 @@ class AuthViewModel: ObservableObject {
             print("DEBUG: Sign in successful")
             print("DEBUG: User id: \(result?.user.uid)")
             self.userSession = result?.user
+            self.fetchUser()
         }
     }
     
     func registerUser(withEmail email: String, password: String, fullName: String) {
+        guard let location = LocationManager.shared.userLocation else { return }
+        
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if let error = error {
                 print("DEBUG: Failed to sign up user with error: \(error.localizedDescription)")
@@ -46,9 +49,12 @@ class AuthViewModel: ObservableObject {
                 fullName: fullName,
                 email: email,
                 uid: firebaseUser.uid,
-                coordinates: GeoPoint(latitude: 37.785834, longitude: -122.406417),
+                coordinates: GeoPoint(latitude: location.latitude, longitude: location.longitude),
                 accountType: .driver
             )
+            
+            self.currentUser = user
+            
             guard let encodedUser = try? Firestore.Encoder().encode(user) else { return } // taking user object and encoded it into like a data dictionary that Firebase can read and I can now send this encoded object up
             
 //            like if we do old fashioned way like so instead our object encodedUser can handle this using firebase firestore encoder
