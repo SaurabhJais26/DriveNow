@@ -96,6 +96,16 @@ extension DNMapViewRepresentable {
             return polyline
         }
         
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            
+            if let annotation = annotation as? DriverAnnotation {
+                let view = MKAnnotationView(annotation: annotation, reuseIdentifier: "driver")
+                view.image = UIImage(systemName: "car.circle.fill")
+                return view
+            }
+            return nil
+        }
+        
         // MARK: - Helpers
         
         func addAndSelectAnnotation(withCoordinate coordinate: CLLocationCoordinate2D) {
@@ -128,13 +138,11 @@ extension DNMapViewRepresentable {
         }
         
         func addDriverToMap(_ drivers: [User]) {
-            for driver in drivers {
-                let coordinate = CLLocationCoordinate2D(latitude: driver.coordinates.latitude, longitude: driver.coordinates.longitude)
-                
-                let anno = MKPointAnnotation()
-                anno.coordinate = coordinate
-                parent.mapView.addAnnotation(anno)
-            }
+//            for driver in drivers {                                       The below line and this for loop block act as same
+//                let driverAnno = DriverAnnotation(driver: driver)
+//            }
+            let annotations = drivers.map({ DriverAnnotation(driver: $0) })
+            self.parent.mapView.addAnnotations(annotations)
         }
         
         
