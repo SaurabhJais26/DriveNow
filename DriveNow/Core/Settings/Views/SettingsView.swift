@@ -78,6 +78,6 @@ struct SettingsView: View {
 
 #Preview {
     NavigationStack {
-        SettingsView(user: User(fullName: "John Doe", email: "johndoe@gmail.com", uid: "123456"))
+        SettingsView(user: dev.mockUser)
     }
 }

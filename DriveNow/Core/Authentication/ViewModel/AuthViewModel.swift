@@ -42,7 +42,13 @@ class AuthViewModel: ObservableObject {
             guard let firebaseUser = result?.user else { return }  // Unwraping the optional value
             self.userSession = firebaseUser
             
-            let user = User(fullName: fullName, email: email, uid: firebaseUser.uid)
+            let user = User(
+                fullName: fullName,
+                email: email,
+                uid: firebaseUser.uid,
+                coordinates: GeoPoint(latitude: 37.785834, longitude: -122.406417),
+                accountType: .driver
+            )
             guard let encodedUser = try? Firestore.Encoder().encode(user) else { return } // taking user object and encoded it into like a data dictionary that Firebase can read and I can now send this encoded object up
             
 //            like if we do old fashioned way like so instead our object encodedUser can handle this using firebase firestore encoder
