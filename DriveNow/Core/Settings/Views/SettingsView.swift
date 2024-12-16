@@ -8,6 +8,14 @@
 import SwiftUI
 
 struct SettingsView: View {
+    
+    private let user: User
+    @EnvironmentObject var viewModel: AuthViewModel
+    
+    init (user: User) {
+        self.user = user
+    }
+    
     var body: some View {
         VStack {
             List {
@@ -21,9 +29,9 @@ struct SettingsView: View {
                             .frame(width: 64, height: 64)
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Saurabh Jaiswal")
+                            Text(user.fullName)
                                 .font(.system(size: 16, weight: .semibold))
-                            Text("saurabh@gmail.com")
+                            Text(user.email)
                                 .font(.system(size: 14))
                                 .accentColor(Color.theme.primaryTextColor)
                                 .opacity(0.77)
@@ -35,6 +43,7 @@ struct SettingsView: View {
                             .imageScale(.small)
                             .foregroundColor(.gray)
                     }
+                    .padding(8)
                 }
                 
                 Section("Favorites") {
@@ -42,20 +51,29 @@ struct SettingsView: View {
                     SavedLocationRowView(imageName: "archivebox.circle.fill", title: "Work", subtitle: "Add Work")
             
                 }
-                Section("Seetings") {
+                Section("Setings") {
                     SettingsRowView(imageName: "bell.circle.fill", title: "Notifications", tintColor: Color(.systemPurple))
                     SettingsRowView(imageName: "creditcard.circle.fill", title: "Payment Methods", tintColor: Color(.systemBlue))
 
                 }
                 Section("Account") {
                     SettingsRowView(imageName: "dollarsign.square.fill", title: "Make money driving", tintColor: Color(.systemGreen))
+                    
                     SettingsRowView(imageName: "arrow.left.square.fill", title: "Sign out", tintColor: Color(.systemRed))
+                        .onTapGesture {
+                            print("DEBUG: Sign out here...")
+                            viewModel.signOut()
+                        }
                 }
             }
         }
+        .navigationTitle("Settings")
+        .navigationBarTitleDisplayMode(.large)
     }
 }
 
 #Preview {
-    SettingsView()
+    NavigationStack {
+        SettingsView(user: User(fullName: "John Doe", email: "johndoe@gmail.com", uid: "123456"))
+    }
 }
