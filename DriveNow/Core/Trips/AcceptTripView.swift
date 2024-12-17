@@ -10,11 +10,15 @@ import MapKit
 
 struct AcceptTripView: View {
     @State private var region: MKCoordinateRegion
+    let trip: Trip
+    let annotationItem: DriveNowLocation
     
-    init() {
-        let center = CLLocationCoordinate2D(latitude: 37.3346, longitude: -122.0090)
+    init(trip: Trip) {
+        let center = CLLocationCoordinate2D(latitude: trip.pickUpLocation.latitude, longitude: trip.pickUpLocation.longitude)
         let span = MKCoordinateSpan(latitudeDelta: 0.025, longitudeDelta: 0.025)
         self.region = MKCoordinateRegion(center: center, span: span)
+        self.trip = trip
+        self.annotationItem = DriveNowLocation(title: trip.pickUpLocationName, coordinate: trip.pickUpLocation.toCoordinate())
     }
     
     var body: some View {
@@ -62,7 +66,7 @@ struct AcceptTripView: View {
                         .clipShape(Circle())
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("John")
+                        Text(trip.passengerName)
                             .fontWeight(.bold)
                         
                         HStack {
@@ -80,7 +84,7 @@ struct AcceptTripView: View {
                     VStack(spacing: 6) {
                         Text("Earnings")
                         
-                        Text("₹155.89")
+                        Text(trip.tripCost.toCurrency())
                             .font(.system(size: 24, weight: .semibold))
                     }
                 }
@@ -95,9 +99,9 @@ struct AcceptTripView: View {
                 HStack {
                     // address info
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Apple Campus")
+                        Text(trip.pickUpLocationName)
                             .font(.headline)
-                        Text("Infinite Loop 1, Santa Clara County")
+                        Text(trip.pickUpLocationAddress)
                             .font(.subheadline)
                             .foregroundColor(.gray)
                     }
@@ -116,11 +120,13 @@ struct AcceptTripView: View {
                 .padding(.horizontal)
                 
                 // map
-                Map(coordinateRegion: $region)
-                    .frame(height: 220)
-                    .cornerRadius(10)
-                    .shadow(color: .black.opacity(0.6), radius: 10)
-                    .padding()
+                Map(coordinateRegion: $region, annotationItems: [annotationItem]) { item in
+                    MapMarker(coordinate: item.coordinate)
+                }
+                .frame(height: 220)
+                .cornerRadius(10)
+                .shadow(color: .black.opacity(0.6), radius: 10)
+                .padding()
                 // divider
                 
                 Divider()
@@ -160,9 +166,10 @@ struct AcceptTripView: View {
             .padding(.top)
             .padding(.horizontal)
         }
+        .background(Color.theme.backgroundColor)
     }
 }
 
 #Preview {
-    AcceptTripView()
+    AcceptTripView(trip: dev.mockTrip)
 }
