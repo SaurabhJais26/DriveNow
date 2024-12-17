@@ -32,9 +32,9 @@ enum RideType: Int, CaseIterable, Identifiable {
     
     var baseFare: Double {
         switch self {
-        case .cabX: return 100
-        case .cabBlack: return 200
-        case .cabXL: return 400
+        case .cabX: return 150
+        case .cabBlack: return 250
+        case .cabXL: return 450
         }
     }
     
