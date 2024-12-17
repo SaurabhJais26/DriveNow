@@ -13,7 +13,7 @@ struct DNMapViewRepresentable: UIViewRepresentable {
     let mapView = MKMapView()
     let locationManager = LocationManager.shared
     @Binding var mapState: MapViewState
-    @EnvironmentObject var locationViewModel: LocationSearchViewModel
+//    @EnvironmentObject var locationViewModel: LocationSearchViewModel
     @EnvironmentObject var homeViewModel: HomeViewModel
     
     func makeUIView(context: Context) -> some UIView {
@@ -39,7 +39,7 @@ struct DNMapViewRepresentable: UIViewRepresentable {
             break
             
         case .locationSelected:
-            if let coordinate = locationViewModel.selectedDriveNowLocation?.coordinate {
+            if let coordinate = homeViewModel.selectedDriveNowLocation?.coordinate {
                 print("DEBUG: Selected location in map view is \(coordinate)")
                 context.coordinator.addAndSelectAnnotation(withCoordinate: coordinate)
                 context.coordinator.configurePolyline(withDestinationCoordinate: coordinate)
@@ -119,7 +119,7 @@ extension DNMapViewRepresentable {
         
         func configurePolyline(withDestinationCoordinate coordinate: CLLocationCoordinate2D) {
             guard let userLoactionCoordinate = self.userLoactionCoordinate else { return }
-            parent.locationViewModel.getDestinationRoute(from: userLoactionCoordinate, to: coordinate) { route in
+            parent.homeViewModel.getDestinationRoute(from: userLoactionCoordinate, to: coordinate) { route in
                 self.parent.mapView.addOverlay(route.polyline)
                 self.parent.mapState = .polylineAdded
                 let rect = self.parent.mapView.mapRectThatFits(route.polyline.boundingMapRect, edgePadding: .init(top: 64, left: 32, bottom: 500, right: 32))
