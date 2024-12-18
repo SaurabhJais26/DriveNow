@@ -36,7 +36,9 @@ class DeveloperPreview {
         pickUpLocationAddress: "123 Main St, Palo Alto, CA",
         pickUpLocation: .init(latitude: 37.789, longitude: -122.7856),
         dropOffLocation: .init(latitude: 37.210, longitude: -122.467),
-        tripCost: 404.0
+        tripCost: 404.0,
+        distanceToPassenger: 1000,
+        travelTimeToPassenger: 24
     )
     
 }
