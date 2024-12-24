@@ -24,7 +24,6 @@ class DeveloperPreview {
     )
     
     let mockTrip = Trip(
-        id: NSUUID().uuidString,
         passengerUid: NSUUID().uuidString,
         driverUid: NSUUID().uuidString,
         passengerName: "Saurabh Jaiswal",
@@ -38,7 +37,8 @@ class DeveloperPreview {
         dropOffLocation: .init(latitude: 37.210, longitude: -122.467),
         tripCost: 404.0,
         distanceToPassenger: 1000,
-        travelTimeToPassenger: 24
+        travelTimeToPassenger: 24,
+        state: .rejected
     )
     
 }

@@ -90,21 +90,21 @@ extension HomeViewModel {
             let tripCost = self.computeRidePrice(forType: .cabX)
             
             let trip = Trip(
-                id: NSUUID().uuidString,
                 passengerUid: currentUser.uid,
                 driverUid: driver.uid,
                 passengerName: currentUser.fullName,
                 driverName: driver.fullName,
                 passengerLocation: currentUser.coordinates,
                 driverLocation: driver.coordinates,
-                pickUpLocationName: placemark.name ?? "",
+                pickUpLocationName: placemark.name ?? "Current Location",
                 dropOffLocationName: dropOffLocation.title,
                 pickUpLocationAddress: self.addressFromPlacemark(placemark),
                 pickUpLocation: currentUser.coordinates,
                 dropOffLocation: dropOffGeoPoint,
                 tripCost: tripCost,
                 distanceToPassenger: 0,
-                travelTimeToPassenger: 0
+                travelTimeToPassenger: 0,
+                state: .requested
             )
             print("DEBUG: Requesting trip: \(trip)")
             
@@ -138,6 +138,24 @@ extension HomeViewModel {
             }
         }
     }
+    
+    func rejectTrip() {
+        updateTripState(state: .rejected)
+    }
+    
+    func acceptTrip() {
+        updateTripState(state: .accepted)
+    }
+    
+    private func updateTripState(state: TripState) {
+        guard let trip = trip else { return }
+        Firestore.firestore().collection("trips").document(trip.id).updateData([
+            "state": state.rawValue
+        ]) { _ in
+            print("DEBUG: Did update trip with state \(state)")
+        }
+    }
+    
 }
 
 
