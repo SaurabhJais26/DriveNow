@@ -48,6 +48,8 @@ struct DNMapViewRepresentable: UIViewRepresentable {
             
         case .polylineAdded:
             break
+        default:
+            break
         }
     }
     
