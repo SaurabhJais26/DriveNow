@@ -13,7 +13,7 @@ struct TripLoadingView: View {
             Capsule()
                 .foregroundColor(Color(.systemGray5))
                 .frame(width: 48, height: 6)
-                .padding(.top, 6)
+                .padding(.top, 8)
             HStack {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Connecting you to a driver")
