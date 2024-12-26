@@ -1,13 +1,15 @@
 //
-//  TripAcceptedView.swift
+//  PickUpPassengerView.swift
 //  DriveNow
 //
-//  Created by Saurabh Jaiswal on 24/12/24.
+//  Created by Saurabh Jaiswal on 26/12/24.
 //
 
 import SwiftUI
 
-struct TripAcceptedView: View {
+struct PickUpPassengerView: View {
+    let trip: Trip
+    
     var body: some View {
         VStack {
             Capsule()
@@ -15,19 +17,18 @@ struct TripAcceptedView: View {
                 .frame(width: 48, height: 6)
                 .padding(.top, 8)
             
-            // pick up info view
             VStack {
                 HStack {
-                    Text("Meet your driver at Apple Campus for your trip to Starbucks.")
-                        .font(.body)
-                        .frame(height: 44)
+                    Text("Pickup \(trip.passengerName) at \(trip.pickUpLocationName)")
+                        .font(.headline)
                         .lineLimit(2)
-                        .padding(.trailing)
+                        .multilineTextAlignment(.leading)
+                        .frame(height: 44)
                     
                     Spacer()
                     
                     VStack {
-                        Text("10")
+                        Text("\(trip.travelTimeToPassenger)")
                             .bold()
                         Text("min")
                             .bold()
@@ -41,8 +42,6 @@ struct TripAcceptedView: View {
                 
                 Divider()
             }
-            
-            // driver info view
             VStack {
                 HStack {
                     Image("GoogleSignInIcon")
@@ -52,7 +51,7 @@ struct TripAcceptedView: View {
                         .clipShape(Circle())
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Travis Head")
+                        Text(trip.passengerName)
                             .fontWeight(.bold)
                         
                         HStack {
@@ -67,23 +66,11 @@ struct TripAcceptedView: View {
                     }
                     Spacer()
                     
-                    // driver vehicle info
-                    VStack(alignment: .center) {
-                        Image("cab-x")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 120, height: 64)
+                    VStack(spacing: 6) {
+                        Text("Earnings")
                         
-                        HStack {
-                            Text("Swift Dzire:")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.secondary)
-                            
-                            Text("UP 16 DN 1234")
-                                .font(.system(size: 14, weight: .semibold))
-                        }
-                        .frame(width: 160)
-                        .padding(.bottom)
+                        Text("\(trip.tripCost.toCurrency())")
+                            .font(.system(size: 24, weight: .semibold))
                     }
                 }
                 
@@ -101,7 +88,6 @@ struct TripAcceptedView: View {
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
-
         }
         .padding(.bottom, 24)
         .background(Color.theme.backgroundColor)
@@ -111,5 +97,5 @@ struct TripAcceptedView: View {
 }
 
 #Preview {
-    TripAcceptedView()
+    PickUpPassengerView(trip: dev.mockTrip)
 }

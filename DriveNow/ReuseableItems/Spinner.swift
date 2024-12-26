@@ -12,7 +12,7 @@ struct Spinner: View {
     let rotationTime: Double = 0.75
     let animationTime: Double = 1.9 // Sum of all animation times
     let fullRotation: Angle = .degrees(360)
-    static let initalDegree: Angle = .degrees(270)
+    static let initialDegree: Angle = .degrees(270)
     let lineWidth: CGFloat
     let height: CGFloat
     let width: CGFloat
@@ -21,9 +21,9 @@ struct Spinner: View {
     @State var spinnerEndS1: CGFloat = 0.03
     @State var spinnerEndS2S3: CGFloat = 0.03
     
-    @State var rotationDegreeS1 = initalDegree
-    @State var rotationDegreeS2 = initalDegree
-    @State var rotationDegreeS3 = initalDegree
+    @State var rotationDegreeS1 = initialDegree
+    @State var rotationDegreeS2 = initialDegree
+    @State var rotationDegreeS3 = initialDegree
     
     var body: some View {
         ZStack {
