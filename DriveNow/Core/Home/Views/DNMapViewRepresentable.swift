@@ -48,6 +48,14 @@ struct DNMapViewRepresentable: UIViewRepresentable {
             
         case .polylineAdded:
             break
+            
+        case .tripAccepted:
+            guard let trip = homeViewModel.trip else { return }
+            guard let driver = homeViewModel.currentUser, driver.accountType == .driver else { return }
+            guard let route = homeViewModel.routeToPickUpLocation else { return }
+            
+            context.coordinator.configurePolylineToPickupLocation(withRoute: route)
+            context.coordinator.addAndSelectAnnotation(withCoordinate: trip.pickUpLocation.toCoordinate())
         default:
             break
         }
@@ -127,6 +135,12 @@ extension DNMapViewRepresentable {
                 let rect = self.parent.mapView.mapRectThatFits(route.polyline.boundingMapRect, edgePadding: .init(top: 64, left: 32, bottom: 500, right: 32))
                 self.parent.mapView.setRegion(MKCoordinateRegion(rect), animated: true)
             }
+        }
+        
+        func configurePolylineToPickupLocation(withRoute route: MKRoute) {
+            self.parent.mapView.addOverlay(route.polyline)
+            let rect = self.parent.mapView.mapRectThatFits(route.polyline.boundingMapRect, edgePadding: .init(top: 88, left: 32, bottom: 400, right: 32))
+            self.parent.mapView.setRegion(MKCoordinateRegion(rect), animated: true)
         }
         
         

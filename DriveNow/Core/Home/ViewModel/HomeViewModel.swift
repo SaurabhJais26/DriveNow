@@ -20,7 +20,8 @@ class HomeViewModel: NSObject, ObservableObject {
     @Published var trip: Trip?
     private let service = UserService.shared
     private var cancellables = Set<AnyCancellable>()
-    private var currentUser: User?
+    var currentUser: User?
+    var routeToPickUpLocation: MKRoute?
     
     // Location Search Properties
     @Published var results = [MKLocalSearchCompletion]()
@@ -61,6 +62,21 @@ class HomeViewModel: NSObject, ObservableObject {
             }
             .store(in: &cancellables)
     }
+    
+    private func updateTripState(state: TripState) {
+        guard let trip = trip else { return }
+        
+        var data = ["state" : state.rawValue]
+        
+        if state == .accepted {
+            data["travelTimeToPassenger"] = trip.travelTimeToPassenger
+        }
+        
+        Firestore.firestore().collection("trips").document(trip.id).updateData(data) { _ in
+            print("DEBUG: Did update trip with state \(state)")
+        }
+    }
+    
 }
 
 // MARK: - Passenger API
@@ -130,6 +146,10 @@ extension HomeViewModel {
             }
         }
     }
+    
+    func cancelTripAsPassenger() {
+        updateTripState(state: .passengerCanelled)
+    }
 }
 
 // MARK: - Driver API
@@ -152,7 +172,7 @@ extension HomeViewModel {
                 self.getDestinationRoute(from: trip.driverLocation.toCoordinate(), to: trip.pickUpLocation.toCoordinate()) { route in
                     print("DEBUG: Expected travel time to passenger: \(Int(route.expectedTravelTime / 60))")
                     print("DEBUG: Distance from passenger to driver: \(route.distance.distanceInMilesString())")
-                    
+                    self.routeToPickUpLocation = route
                     self.trip?.travelTimeToPassenger = Int(route.expectedTravelTime / 60)
                     self.trip?.distanceToPassenger = route.distance
                 }
@@ -187,18 +207,8 @@ extension HomeViewModel {
         updateTripState(state: .accepted)
     }
     
-    private func updateTripState(state: TripState) {
-        guard let trip = trip else { return }
-        
-        var data = ["state" : state.rawValue]
-        
-        if state == .accepted {
-            data["travelTimeToPassenger"] = trip.travelTimeToPassenger
-        }
-        
-        Firestore.firestore().collection("trips").document(trip.id).updateData(data) { _ in
-            print("DEBUG: Did update trip with state \(state)")
-        }
+    func cancelTripAsDriver() {
+        updateTripState(state: .driverCanelled)
     }
     
 }
