@@ -46,6 +46,54 @@ class HomeViewModel: NSObject, ObservableObject {
         searchCompleter.queryFragment = queryFragment
     }
     
+    // MARK: - Helpers
+    var tripCancelledMessage: String {
+        guard let user = currentUser, let trip = trip else { return "" }
+        
+        if user.accountType == .passenger {
+            if trip.state == .driverCanelled {
+                return "Your driver has cancelled the trip"
+            } else if trip.state == .passengerCanelled {
+                return "Your trip has been cancelled"
+            }
+        } else {
+            if trip.state == .driverCanelled {
+                return "Your trip has been cancelled"
+            } else if trip.state == .passengerCanelled {
+                return "The trip has been cancelled by the passenger"
+            }
+        }
+        return ""
+    }
+    
+    func viewForState(_ state: MapViewState, user: User) -> some View {
+        switch state {
+        case . polylineAdded, .locationSelected:
+            return AnyView(RideRequestView())
+        case .tripRequested:
+            if user.accountType == .passenger {
+                return AnyView(TripLoadingView())
+            } else {
+                if let trip = self.trip {
+                    return AnyView(AcceptTripView(trip: trip))
+                }
+            }
+        case .tripAccepted:
+            if user.accountType == .passenger {
+                return AnyView(TripAcceptedView())
+            } else {
+                if let trip = self.trip {
+                    return AnyView(PickUpPassengerView(trip: trip))
+                }
+            }
+        case .tripCancelledByPassenger, .tripCancelledByDriver:
+            return AnyView(TripCancelledView())
+        default:
+            break
+        }
+        return AnyView(Text(""))
+    }
+    
     // MARK: - USER API
     func fetchUser() {
         service.$user
@@ -74,6 +122,15 @@ class HomeViewModel: NSObject, ObservableObject {
         
         Firestore.firestore().collection("trips").document(trip.id).updateData(data) { _ in
             print("DEBUG: Did update trip with state \(state)")
+        }
+    }
+    
+    func deleteTrip() {
+        guard let trip = trip else { return }
+        
+        Firestore.firestore().collection("trips").document(trip.id).delete { _ in
+            self.trip = nil
+            print("DEBUG: Did delete trip")
         }
     }
     

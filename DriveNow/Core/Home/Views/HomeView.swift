@@ -63,32 +63,8 @@ extension HomeView {
             }
             
             if let user = authViewModel.currentUser {
-                if user.accountType == .passenger {
-                    if mapState == .locationSelected || mapState == .polylineAdded {
-                        RideRequestView()
-                            .transition(.move(edge: .bottom))
-                    } else if mapState == .tripRequested {
-                        // show trip loading view
-                        TripLoadingView()
-                            .transition(.move(edge: .bottom))
-                    } else if mapState == .tripAccepted {
-                        // show trip accepted view
-                        TripAcceptedView()
-                            .transition(.move(edge: .bottom))
-                    } else if mapState == .tripRejected {
-                        // show trip rejected view
-                    }
-                } else {
-                    if let trip = homeViewModel.trip {
-                        if mapState == .tripRequested {
-                            AcceptTripView(trip: trip)
-                                .transition(.move(edge: .bottom))
-                        } else if mapState == .tripAccepted {
-                            PickUpPassengerView(trip: trip)
-                                .transition(.move(edge: .bottom))
-                        }
-                    }
-                }
+                homeViewModel.viewForState(mapState, user: user)
+                    .transition(.move(edge: .bottom))
             }
         }
         .edgesIgnoringSafeArea(.bottom)
@@ -104,7 +80,10 @@ extension HomeView {
             }
         }
         .onReceive(homeViewModel.$trip) { trip in
-            guard let trip = trip else { return }
+            guard let trip = trip else {
+                self.mapState = .noInput
+                return
+            }
             
             withAnimation(.spring()) {
                 switch trip.state {
@@ -118,8 +97,10 @@ extension HomeView {
                     print("DEBUG: Trip is accepted")
                     self.mapState = .tripAccepted
                 case .passengerCanelled:
+                    self.mapState = .tripCancelledByPassenger
                     print("DEBUG:  Passenger Canelled Trip")
                 case .driverCanelled:
+                    self.mapState = .tripCancelledByDriver
                     print("DEBUG: Driver Canelled Trip")
                 }
             }
