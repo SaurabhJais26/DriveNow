@@ -36,7 +36,7 @@ class AuthViewModel: ObservableObject {
         }
     }
     
-    func registerUser(withEmail email: String, password: String, fullName: String) {
+    func registerUser(withEmail email: String, password: String, fullName: String, accountType: AccountType) {
         guard let location = LocationManager.shared.userLocation else { return }
         
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
@@ -54,7 +54,7 @@ class AuthViewModel: ObservableObject {
                 email: email,
                 uid: firebaseUser.uid,
                 coordinates: GeoPoint(latitude: location.latitude, longitude: location.longitude),
-                accountType: .driver
+                accountType: accountType
             )
             
             self.currentUser = user

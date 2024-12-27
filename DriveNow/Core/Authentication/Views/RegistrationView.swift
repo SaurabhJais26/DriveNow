@@ -12,6 +12,7 @@ struct RegistrationView: View {
     @State private var fullname = ""
     @State private var email = ""
     @State private var password = ""
+    @State private var accountType: AccountType = .passenger  // Default to passenger
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var viewModel: AuthViewModel
     
@@ -38,6 +39,25 @@ struct RegistrationView: View {
                 
                 Spacer()
                 
+                
+                VStack(alignment: .leading) {
+                    Text("Choose account type")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        
+                    
+                    Picker("Account Type", selection: $accountType) {
+                        Text("Passenger").tag(AccountType.passenger)
+                            .foregroundColor(Color.theme.primaryTextColor)
+                        Text("Driver").tag(AccountType.driver)
+                            .foregroundColor(Color.theme.primaryTextColor)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding()
+                }
+                .padding(.leading)
+                
+                
                 VStack(alignment: .leading) {
                     VStack(spacing: 56) {
                         CustomInputField(text: $fullname,
@@ -57,7 +77,7 @@ struct RegistrationView: View {
                     Spacer()
                     // sign up button
                     Button {
-                        viewModel.registerUser(withEmail: email, password: password, fullName: fullname)
+                        viewModel.registerUser(withEmail: email, password: password, fullName: fullname, accountType: accountType)
                     } label: {
                         HStack {
                             Text("SIGN UP")
@@ -66,7 +86,7 @@ struct RegistrationView: View {
                             Image(systemName: "arrow.right")
                                 .foregroundColor(.black)
                         }
-                        .frame(width: UIScreen.main.bounds.width - 32, height: 50)
+                        .frame(width: UIScreen.main.bounds.width, height: 50)
                     }
                     .background(Color.white)
                     .cornerRadius(10)
